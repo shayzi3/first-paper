@@ -11,7 +11,7 @@ Cложные запросы через паттерн Repository. Large Reposit
 
 Схема работы реализации:
 
-![](https://github.com/shayzi3/first-paper/blob/images/scheme.png)
+![](https://github.com/shayzi3/first-paper/blob/master/images/scheme.png)
 
 Добавляются 3 новых слоя: `Configs`, `ORM Query Builder`, `Operator Agregate`
 
