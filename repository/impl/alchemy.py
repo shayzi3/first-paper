@@ -13,12 +13,16 @@ from ..builder_configs.configs import (
      OrderByConfig,
      LazyLoadConfig
 )
+from .mixins.alchemy import SQLAlchemyUserRepositoryMixin
 
 
 DTO = TypeVar("DTO")
 
 
-class SQLAlchemyRepository(Generic[DTO]):
+class SQLAlchemyRepository(
+     Generic[DTO],
+     SQLAlchemyUserRepositoryMixin
+):
      
      def __init__(self, session: AsyncSession, model: type[Base], *args, **kwargs) -> None:
           self.model = model
