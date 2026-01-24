@@ -1,8 +1,9 @@
-from typing import Any
+from typing import Any, TypeVar, Generic
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from db.models import Base
 from ..query_builder.impl.alchemy import SQLAlchemyQueryBuilder
 from ..query_builder.agregator.impl.alchemy import SQLAlchemyAgregateFilterType
 from ..builder_configs.configs import (
@@ -14,47 +15,48 @@ from ..builder_configs.configs import (
 )
 
 
+DTO = TypeVar("DTO")
 
 
-class SQLAlchemyRepository:
-     model = None
+class SQLAlchemyRepository(Generic[DTO]):
      
-     def __init__(self) -> None:
+     def __init__(self, session: AsyncSession, model: type[Base], *args, **kwargs) -> None:
+          self.model = model
+          self._session = session
           self._query_builder = SQLAlchemyQueryBuilder
           self._agregator = SQLAlchemyAgregateFilterType()
      
      async def read(
           self,
-          session: AsyncSession,
-          filter: list[FilterConfig] = [],
+          filters: list[FilterConfig] = [],
           columns: list[ColumnConfig] = [],
-          join: list[JoinConfig] = [],
+          joins: list[JoinConfig] = [],
           order_by: list[OrderByConfig] = [],
-          load: list[LazyLoadConfig] = [],
-          limit: int | None = None,
+          loads: list[LazyLoadConfig] = [],
           offset: int | None = None,
+          limit: int | None = None,
           count: bool = False,
-          many: bool = False
-     ) -> None | list[dict[str, Any]] | dict[str, Any]:
+          is_many: bool = False
+     ) -> DTO | list[DTO] | dict[str, Any] | list[dict[str, Any]] | None:
           query = (
                self._query_builder(
                     query_type=select,
                     model=self.model,
                     filter_agregate=self._agregator
                ).
-               filter(filters=filter).
+               filter(filters=filters).
                columns(columns=columns).
-               join(joins=join).
+               join(joins=joins).
                order_by(order_by=order_by).
-               load(loads=load).
+               load(loads=loads).
                limit(limit).
                offset(offset)
           )
           if count is True:
                query = query.count()
                
-          result = await session.execute(query.build())
-          if many is True:
+          result = await self._session.execute(query.build())
+          if is_many:
                result = (
                     result.scalars().all() 
                     if not columns else result.mappings().all()

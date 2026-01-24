@@ -1,14 +1,12 @@
 import asyncio
 
-from service.impl.test_service import ItemWearService
-from repository.sqlalchemy_repo.item_wear import ItemWearSQLAlchemyRepository
+from db.models import create_test_data
 
-def main():
-     result = ItemWearService(
-          repository=ItemWearSQLAlchemyRepository()
-     )
-     asyncio.run(result.get_item(id=1))
+
+async def main() -> None:
+     # await create_test_data()
+     ...
      
-
+     
 if __name__ == "__main__":
-     main()
+     asyncio.run(main())

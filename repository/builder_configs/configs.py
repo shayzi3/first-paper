@@ -26,10 +26,10 @@ class OrderByConfig:
 @dataclass
 class ColumnConfig:
      column: str
-     label: str | UNSET = UNSET
+     label: str | None = None
      value: Any = UNSET
      filter_type: FilterType = FilterType.EQ
-     value_is_column: bool = False # value = 'table_name.column'
+     value_is_column: bool = False
      
 
 @dataclass

@@ -86,7 +86,7 @@ class SQLAlchemyQueryBuilder:
                               filter_type=config.filter_type
                          )
                          
-                    if config.label not in (UNSET, None):
+                    if config.label is not None:
                          obj = obj.label(config.label)
                     self._columns.append(obj)
           return self
@@ -281,6 +281,3 @@ class SQLAlchemyQueryBuilder:
           if self._offset:
                query = query.offset(self._offset)
           return query
-     
-# Дописать статью: Beat
-# Примеры использования конфигов
