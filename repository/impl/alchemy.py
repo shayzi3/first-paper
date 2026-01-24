@@ -13,12 +13,16 @@ from ..builder_configs.configs import (
      OrderByConfig,
      LazyLoadConfig
 )
+from .mixins.alchemy import SQLAlchemyUserRepositoryMixin
 
 
 DTO = TypeVar("DTO")
 
 
-class SQLAlchemyRepository(Generic[DTO]):
+class SQLAlchemyRepository(
+     Generic[DTO],
+     SQLAlchemyUserRepositoryMixin
+):
      
      def __init__(self, session: AsyncSession, model: type[Base], *args, **kwargs) -> None:
           self.model = model
@@ -54,11 +58,11 @@ class SQLAlchemyRepository(Generic[DTO]):
           )
           if count is True:
                query = query.count()
-               
+          
           result = await self._session.execute(query.build())
           if is_many:
                result = (
-                    result.scalars().all() 
+                    result.scalars().unique().all() 
                     if not columns else result.mappings().all()
                )
           else:
@@ -68,9 +72,14 @@ class SQLAlchemyRepository(Generic[DTO]):
                )
           if not result:
                return None
-          return result
-               
           
+          if columns:
+               return result
+          
+          if is_many is True:
+               return [model.dto() for model in result]
+          else:
+               return result.dto()
                
           
           

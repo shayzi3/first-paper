@@ -38,7 +38,7 @@ class SQLAlchemyQueryBuilder:
           self._filter_agregate: AgregateFilterTypeProtocol = filter_agregate
           self._model: type[ALCHEMYMODEL] = model
           
-          self._columns: list[MappedColumn | ColumnElement[bool] | Label[Any]] = []
+          self._columns: list[MappedColumn[Any] | ColumnElement[bool] | Label[Any]] = []
           self._limit: int | None = None
           self._offset: int | None = None
           self._joins: list[type[ALCHEMYMODEL]] = []
@@ -67,7 +67,7 @@ class SQLAlchemyQueryBuilder:
                     
                for config in columns:
                     obj = getattr(model, config.column, None)
-                    if (obj is None) or (isinstance(obj, MappedColumn) is False):
+                    if (obj is None):
                          raise ValueError(f"model {model.__name__} has not column {config.column}")
                     
                     if config.value is not UNSET:
@@ -75,7 +75,7 @@ class SQLAlchemyQueryBuilder:
                               table_name, column_name = config.value.split(".")
                               orm_object = self._orm_models.get(table_name)
 
-                              if (hasattr(orm_object, column_name) is False) or (isinstance(obj, MappedColumn) is False):
+                              if (hasattr(orm_object, column_name) is False):
                                    raise ValueError(f"model {orm_object} has not column {column_name}")
 
                               config.value = getattr(orm_object, column_name)
@@ -114,7 +114,7 @@ class SQLAlchemyQueryBuilder:
                     elements_objects = []
                     for filter_ in filter.filters:
                          obj = getattr(model, filter_.column, None)
-                         if (obj is None) or (isinstance(obj, MappedColumn) is False):
+                         if (obj is None):
                               raise ValueError(f"model {model.__name__} has not column {filter_.column}")
                          
                          column_element = self._filter_agregate.filter_agregate(
@@ -125,9 +125,9 @@ class SQLAlchemyQueryBuilder:
                          elements_objects.append(column_element)
                          
                     if mode is None:
-                         configs.append(mode(*elements_objects))
+                         configs.extend(elements_objects)
                     else:
-                         elements_objects.extend(elements_objects)
+                         configs.append(mode(*elements_objects))
                          
                if configs:
                     self._filter.extend(configs)
@@ -146,11 +146,11 @@ class SQLAlchemyQueryBuilder:
                     
                for oby in order_by:
                     oby_mode = asc
-                    if oby.order_by_type == OrderByType.DESC:
+                    if oby.mode == OrderByType.DESC:
                          oby_mode = desc
                     
                     obj = getattr(model, oby.column, None)
-                    if (obj is None) or (isinstance(obj, MappedColumn) is False):
+                    if (obj is None):
                          raise ValueError(f"model {model.__name__} has not column {oby.column}")
                     
                     self._order_by.append(oby_mode(obj))
@@ -201,7 +201,7 @@ class SQLAlchemyQueryBuilder:
                     
                     for part in relationship_path:
                          relationship_declared = getattr(current_model, part, None)
-                         if (relationship_declared is None) or (isinstance(relationship_declared, _RelationshipDeclared) is False):
+                         if (relationship_declared is None):
                               raise ValueError(f"Error in relationship path: model {current_model.__name__} has no relationship {part}")
                          
                          current_model = relationship_declared.mapper.class_
@@ -248,9 +248,9 @@ class SQLAlchemyQueryBuilder:
           self
      ) -> Any:
           query = self._query_type(self._model)
-          
+
           if self._columns:
-               query = self._query_type(*self._columns)
+               query = self._query_type(*self._columns).select_from(self._model)
                
           if self._count:
                count = func.count()
