@@ -58,11 +58,11 @@ class SQLAlchemyRepository(
           )
           if count is True:
                query = query.count()
-               
+          
           result = await self._session.execute(query.build())
           if is_many:
                result = (
-                    result.scalars().all() 
+                    result.scalars().unique().all() 
                     if not columns else result.mappings().all()
                )
           else:
@@ -72,9 +72,14 @@ class SQLAlchemyRepository(
                )
           if not result:
                return None
-          return result
-               
           
+          if columns:
+               return result
+          
+          if is_many is True:
+               return [model.dto() for model in result]
+          else:
+               return result.dto()
                
           
           

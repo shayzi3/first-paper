@@ -1,7 +1,9 @@
+from typing import Any
 from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship, Mapped
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy import ForeignKey, BigInteger, insert
 
+from schema.dto import UserDTO, ItemDTO, MarketItemDTO
 from .session import async_session
 from .test_data import users, items, market_items
 
@@ -20,8 +22,7 @@ class Base(DeclarativeBase, AsyncAttrs):
                     models[mapper.class_.__tablename__] = mapper.class_
                cls._cached_orm_models.update(models)
           return cls._cached_orm_models
-     
-
+      
 class User(Base):
      __tablename__ = "users"
      
@@ -29,6 +30,16 @@ class User(Base):
      username: Mapped[str] = mapped_column(nullable=False)
      
      sell_items: Mapped[list["MarketItem"]] = relationship(back_populates="user")
+     
+     def dto(self) -> UserDTO:
+          return UserDTO(
+               id=self.id,
+               username=self.username,
+               sell_items=(
+                    [model.dto() for model in self.sell_items]
+                    if "sell_items" in self.__dict__.keys() else []
+               )
+          )
      
      
 class Item(Base):
@@ -39,6 +50,17 @@ class Item(Base):
      category: Mapped[str] = mapped_column(nullable=False)
      
      market_items: Mapped[list["MarketItem"]] = relationship(back_populates="item")
+     
+     def dto(self) -> ItemDTO:
+          return ItemDTO(
+               id=self.id,
+               short_name=self.short_name,
+               category=self.category,
+               market_items=(
+                    [model.dto() for model in self.market_items]
+                    if "market_items" in self.__dict__.keys() else []
+               )
+          )
      
 
 class MarketItem(Base):
@@ -54,6 +76,23 @@ class MarketItem(Base):
      item: Mapped["Item"] = relationship(back_populates="market_items")
      user: Mapped["User"] = relationship(back_populates="sell_items")
      
+     def dto(self) -> MarketItemDTO:
+          return MarketItemDTO(
+               id=self.id,
+               item_id=self.item_id,
+               user_id=self.user_id,
+               full_name=self.full_name,
+               wear=self.wear,
+               price=self.price,
+               item=(
+                    self.item.dto() 
+                    if "item" in self.__dict__.keys() else None
+               ),
+               user=(
+                    self.user.dto() 
+                    if "user" in self.__dict__.keys() else None
+               )
+          )
      
      
 async def create_test_data() -> None:

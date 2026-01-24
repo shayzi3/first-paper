@@ -39,5 +39,6 @@ market_items = [
      {"id": 12, "user_id": 10, "item_id": 2, "full_name": "AWP | Asiimov (Field-Tested)", "wear": "0.22", "price": 65.40},
      {"id": 13, "user_id": 3, "item_id": 3, "full_name": "M4A1-S | Cyrex (Factory New)", "wear": "0.03", "price": 110.25},
      {"id": 14, "user_id": 4, "item_id": 6, "full_name": "★ Karambit | Crimson Web (Minimal Wear)", "wear": "0.09", "price": 2100.00},
-     {"id": 15, "user_id": 5, "item_id": 4, "full_name": "Glock-18 | Water Elemental (Field-Tested)", "wear": "0.25", "price": 15.80}
+     {"id": 15, "user_id": 5, "item_id": 4, "full_name": "Glock-18 | Water Elemental (Field-Tested)", "wear": "0.25", "price": 15.80},
+     {"id": 16, "user_id": 2, "item_id": 1, "full_name": "AK-47 | Redline (Field-Tested)", "wear": "0.21", "price": 130.0}
 ]

@@ -1,7 +1,5 @@
 from pydantic import BaseModel
-
-
-
+     
 
 class UserDTO(BaseModel):
      id: int
@@ -26,5 +24,5 @@ class MarketItemDTO(BaseModel):
      wear: str
      price: float
      
-     item: ItemDTO
-     user: UserDTO
+     item: ItemDTO | None = None
+     user: UserDTO | None = None

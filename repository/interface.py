@@ -9,7 +9,7 @@ from .builder_configs.configs import (
      OrderByConfig,
      LazyLoadConfig
 )
-from .impl.mixins.interfaces.user import UserRepositoryMixinProtocol
+from .impl.mixins.interfaces import UserRepositoryMixinProtocol
 
 
 DTO = TypeVar("DTO")
@@ -17,9 +17,9 @@ DTO = TypeVar("DTO")
 
 
 class RepositoryProtocol(
-     Protocol, 
      Generic[DTO],
-     UserRepositoryMixinProtocol
+     UserRepositoryMixinProtocol,
+     Protocol,
 ):
      
      def __init__(self, session: Any, *args, **kwargs) -> None:
