@@ -16,6 +16,8 @@ class FilterType(Enum):
 	GE = ">="
 	LT = "<"
 	LE = "<="
+	IN = "in"
+	VECTOR_SORT = "vector_sort"
 
 class OrderByType(Enum):
 	ASC = "asc"

@@ -155,7 +155,7 @@ class SQLAlchemyQueryBuilder:
                     
                     self._order_by.append(oby_mode(obj))
           return self
-          
+     
      def join(self, joins: list[JoinConfig]) -> Self:
           if joins:
                for join in joins:

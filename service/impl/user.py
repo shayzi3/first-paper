@@ -208,7 +208,6 @@ class UserService:
                          {'username': 'skin_master', 'full_name': 'M4A1-S | Cyrex (Factory New)', 'price': 110.25, 'category': 'rifle'}, 
                          {'username': 'csgo_queen', 'full_name': 'M4A1-S | Hyper Beast (Minimal Wear)', 'price': 89.99, 'category': 'rifle'}
                     ]
-          
           """
           async with uow:
                users = await uow.user.read(

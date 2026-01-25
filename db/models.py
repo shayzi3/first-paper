@@ -1,7 +1,8 @@
 from typing import Any
 from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship, Mapped
 from sqlalchemy.ext.asyncio import AsyncAttrs
-from sqlalchemy import ForeignKey, BigInteger, insert
+from sqlalchemy import ForeignKey, BigInteger, insert, Computed, Index
+from sqlalchemy.dialects.postgresql import TSVECTOR
 
 from schema.dto import UserDTO, ItemDTO, MarketItemDTO
 from .session import async_session
@@ -66,12 +67,25 @@ class Item(Base):
 class MarketItem(Base):
      __tablename__ = "market_items"
      
+     __table_args__ = (
+          Index(
+               "idx_full_name", 
+               "full_name_vector", 
+               postgresql_using='gin'
+          ),
+     )
+     
      id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
      user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"))
      item_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("items.id", ondelete="CASCADE", onupdate="CASCADE"))
      full_name: Mapped[str] = mapped_column(nullable=False)
      wear: Mapped[str] = mapped_column(nullable=False)
      price: Mapped[float] = mapped_column(nullable=False)
+     
+     full_name_vector: Mapped[str] = mapped_column(
+          TSVECTOR,
+          Computed("to_tsvector('english', full_name)", persisted=True)
+     )
      
      item: Mapped["Item"] = relationship(back_populates="market_items")
      user: Mapped["User"] = relationship(back_populates="sell_items")

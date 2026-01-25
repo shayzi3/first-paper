@@ -2,6 +2,7 @@ import inspect
 
 from typing import TYPE_CHECKING, TypeVar, ParamSpec, Callable
 from dishka import Provider, Scope, provide, make_async_container
+from dishka.exceptions import NoFactoryError
 
 from repository.uow.interface import UnitOfWorkProtocol
 from repository.uow.impl.alchemy import UnitOfWorkSQLAlchemy
@@ -38,7 +39,11 @@ def inject_dependency(func: Callable[P, T]) -> Callable[P, T]:
                     
                     if args_types:
                          async with async_di_container() as container:
-                              di = await container.get(args_types[0])
+                              try:
+                                   di = await container.get(args_types[0])
+                              except NoFactoryError:
+                                   continue
+                              
                               if di and arg not in kwargs:
                                    kwargs[arg] = di
           return await func(self, *args, **kwargs)
