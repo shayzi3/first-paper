@@ -1,7 +1,6 @@
 from typing import Callable, Any, TypeVar
 from typing_extensions import Self
 
-from sqlalchemy.orm.relationships import _RelationshipDeclared
 from sqlalchemy.orm.properties import MappedColumn
 from sqlalchemy.sql.elements import ColumnElement, Label, UnaryExpression
 from sqlalchemy.orm.strategy_options import _AbstractLoad
@@ -17,7 +16,7 @@ from repository.builder_configs.configs import (
      LazyLoadConfig
 )
 from repository.builder_configs.types import LazyLoadType, OrderByType, FilterLogicType, UNSET
-from ..agregator.interface import AgregateFilterTypeProtocol
+from ..agregator.impl.alchemy import SQLAlchemyAgregateFilterType
 
 
 ALCHEMYMODEL = TypeVar("ALCHEMYMODEL", bound=Base)
@@ -30,12 +29,12 @@ class SQLAlchemyQueryBuilder:
           self,
           query_type: Callable,
           model: type[ALCHEMYMODEL],
-          filter_agregate: AgregateFilterTypeProtocol,
+          filter_agregate: SQLAlchemyAgregateFilterType,
           *args,
           **kwargs
      ) -> None:
           self._query_type: Callable = query_type # select, insert, update, delete
-          self._filter_agregate: AgregateFilterTypeProtocol = filter_agregate
+          self._filter_agregate: SQLAlchemyAgregateFilterType = filter_agregate
           self._model: type[ALCHEMYMODEL] = model
           
           self._columns: list[MappedColumn[Any] | ColumnElement[bool] | Label[Any]] = []
