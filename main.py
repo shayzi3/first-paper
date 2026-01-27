@@ -42,18 +42,18 @@ async def call_market_item_service_methods() -> None:
           categories=["rifle", "pistol"],
           price=150,
           price_filter_type=FilterType.LE,
-          price_order_by=OrderByType.DESC
+          price_order_by=OrderByType.DESC,
+          limit=2,
+          offset=0
      )
      print(f"Items: {items}")
 
 
 async def main() -> None:
      # await call_user_service_methods() 
-     await call_item_service_methods()
-     # await call_market_item_service_methods()
+     # await call_item_service_methods()
+     await call_market_item_service_methods()
       
      
 if __name__ == "__main__":
      asyncio.run(main())
-     
-     

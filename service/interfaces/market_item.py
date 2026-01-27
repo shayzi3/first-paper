@@ -8,6 +8,8 @@ class MarketItemServiceProtocol(Protocol):
      
      async def paginate_market_items(
           self,
+          limit: int,
+          offset: int,
           categories: list[str] = [],
           full_name: str | None = None,
           wear: list[str] = [],

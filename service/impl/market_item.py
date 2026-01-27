@@ -18,6 +18,8 @@ class MarketItemService:
      @inject_dependency
      async def paginate_market_items(
           self,
+          limit: int,
+          offset: int,
           uow: FromDishka[UnitOfWorkProtocol],
           categories: list[str] = [],
           full_name: str | None = None,
@@ -174,7 +176,9 @@ class MarketItemService:
                          )
                     ],
                     filters=market_items_config,
-                    is_many=True
+                    is_many=True,
+                    limit=limit,
+                    offset=offset
                )
                return items if items else []
           
