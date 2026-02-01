@@ -13,7 +13,6 @@ from ..builder_configs.configs import (
      OrderByConfig,
      LazyLoadConfig
 )
-from .mixins.alchemy import SQLAlchemyUserRepositoryMixin
 
 
 DTO = TypeVar("DTO")
@@ -21,7 +20,6 @@ DTO = TypeVar("DTO")
 
 class SQLAlchemyRepository(
      Generic[DTO],
-     SQLAlchemyUserRepositoryMixin
 ):
      
      def __init__(self, session: AsyncSession, model: type[Base], *args, **kwargs) -> None:
@@ -29,7 +27,8 @@ class SQLAlchemyRepository(
           self._session = session
           self._query_builder = SQLAlchemyQueryBuilder
           self._agregator = SQLAlchemyAgregateFilterType()
-     
+          
+
      async def read(
           self,
           filters: list[FilterConfig] = [],

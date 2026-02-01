@@ -29,11 +29,11 @@ async def call_item_service_methods() -> None:
      service = ItemService()
      
      item = await service.get_item_with_market_items(id=2)
-     print(f"Item: {item}\n\n")
+     print(f"Item by id with items on market: {item}\n\n")
      
      items = await service.get_items_of_categories(categories=["rifle", "sniper"])
-     print(f"Items: {items}\n")
-     
+     print(f"Items by category: {items}\n")
+
 
 async def call_market_item_service_methods() -> None:
      service = MarketItemService()
@@ -46,12 +46,12 @@ async def call_market_item_service_methods() -> None:
           limit=2,
           offset=0
      )
-     print(f"Items: {items}")
+     print(f"Paginate items by filters: {items}")
 
 
 async def main() -> None:
-     # await call_user_service_methods() 
-     # await call_item_service_methods()
+     await call_user_service_methods() 
+     await call_item_service_methods()
      await call_market_item_service_methods()
       
      
